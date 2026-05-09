@@ -1,0 +1,27 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Delete Review{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">Delete this review?</h3>
+                <p>You're about to delete your review for <strong>{{ review.product.name }}</strong>. This cannot be undone.</p>
+
+                <blockquote class="border-start border-3 ps-3 my-3">
+                    <p class="mb-1">{{ review.comment }}</p>
+                    <small class="text-muted">{{ review.rating }}/5 stars</small>
+                </blockquote>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, delete</button>
+                    <a href="{% url 'store:product_detail' review.product.id %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

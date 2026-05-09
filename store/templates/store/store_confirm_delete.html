@@ -1,0 +1,28 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Delete Store{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:vendor_dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Delete {{ store.name }}</li>
+    </ol>
+</nav>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">Delete this store?</h3>
+                <p>You're about to delete <strong>{{ store.name }}</strong>. This will also delete all of its products. This action cannot be undone.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, delete</button>
+                    <a href="{% url 'store:vendor_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Home - eCommerce{% endblock %}
+
+{% block content %}
+<div class="text-center py-4">
+    <h1>Welcome to eCommerce</h1>
+    <p class="lead">Browse products from local vendors or sign up to start selling.</p>
+
+    {% if not user.is_authenticated %}
+        <div class="mt-3">
+            <a href="{% url 'store:register' %}" class="btn btn-primary me-2">Get Started</a>
+            <a href="{% url 'store:login' %}" class="btn btn-outline-primary">Login</a>
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'store:product_list' %}" class="btn btn-success">Browse All Products</a>
+    </div>
+</div>
+{% endblock %}

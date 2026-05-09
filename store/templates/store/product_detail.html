@@ -1,0 +1,107 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:product_list' %}">Products</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'store:store_detail' product.store.id %}">{{ product.store.name }}</a></li>
+        <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>{{ product.name }}</h2>
+        <p class="text-muted">
+            Sold by <a href="{% url 'store:store_detail' product.store.id %}">{{ product.store.name }}</a>
+        </p>
+
+        <p>{{ product.description|default:"No description provided." }}</p>
+
+        <h3 class="text-primary">R{{ product.price }}</h3>
+
+        {% if product.stock > 0 %}
+            <p class="text-muted">{{ product.stock }} in stock</p>
+        {% else %}
+            <p class="text-danger"><strong>Out of stock</strong></p>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                {% if user.is_authenticated and user.profile.role == 'buyer' %}
+                    {% if product.stock > 0 %}
+                        <form method="post" action="{% url 'store:add_to_cart' product.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+                        </form>
+                    {% else %}
+                        <button class="btn btn-secondary w-100" disabled>Out of Stock</button>
+                    {% endif %}
+                {% elif user.is_authenticated and user.profile.role == 'vendor' %}
+                    <p class="text-muted small mb-0">Vendors can't add products to a cart. Log in as a buyer to purchase.</p>
+                {% else %}
+                    <a href="{% url 'store:login' %}" class="btn btn-primary w-100">Login to Buy</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<!-- Reviews section -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Reviews ({{ reviews.count }})</h3>
+    {% if user.is_authenticated and user.profile.role == 'buyer' %}
+        {% if user_review %}
+            <a href="{% url 'store:review_edit' user_review.id %}" class="btn btn-outline-primary btn-sm">Edit My Review</a>
+        {% else %}
+            <a href="{% url 'store:review_create' product.id %}" class="btn btn-primary btn-sm">Leave a Review</a>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% if reviews %}
+    {% for review in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>{{ review.buyer.username }}</strong>
+                        {% if review.verified %}
+                            <span class="badge bg-success">✓ Verified Purchase</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Unverified</span>
+                        {% endif %}
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                            <span class="text-muted small ms-2">{{ review.rating }}/5</span>
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                </div>
+                <p class="mt-2 mb-0">{{ review.comment }}</p>
+
+                {% if review.buyer == user %}
+                    <div class="mt-2">
+                        <a href="{% url 'store:review_edit' review.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a href="{% url 'store:review_delete' review.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+{% endif %}
+{% endblock %}

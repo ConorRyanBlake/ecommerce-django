@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{% if store %}Edit Store{% else %}New Store{% endif %}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:vendor_dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">{% if store %}Edit {{ store.name }}{% else %}New Store{% endif %}</li>
+    </ol>
+</nav>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>{% if store %}Edit Store{% else %}Create a New Store{% endif %}</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Store Name</label>
+                <input type="text" class="form-control" id="name" name="name"
+                       value="{% if store %}{{ store.name }}{% endif %}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4">{% if store %}{{ store.description }}{% endif %}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                {% if store %}Save Changes{% else %}Create Store{% endif %}
+            </button>
+            <a href="{% url 'store:vendor_dashboard' %}" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

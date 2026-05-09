@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database (the reviewer will create their own)
+db.sqlite3
+db.sqlite3-journal
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Migrations are usually committed - leave them in
+
+# Secrets / env files
+.env

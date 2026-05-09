@@ -1,0 +1,48 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{% if review %}Edit Review{% else %}Leave a Review{% endif %}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:product_detail' product.id %}">{{ product.name }}</a></li>
+        <li class="breadcrumb-item active">{% if review %}Edit Review{% else %}Leave a Review{% endif %}</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>{% if review %}Edit Your Review{% else %}Leave a Review{% endif %}</h2>
+        <p class="text-muted">
+            For: <strong>{{ product.name }}</strong>
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating (1-5)</label>
+                <select class="form-select" id="rating" name="rating" required>
+                    <option value="">Choose...</option>
+                    {% for i in "12345" %}
+                        <option value="{{ forloop.counter }}"
+                            {% if review and review.rating == forloop.counter %}selected{% endif %}>
+                            {{ forloop.counter }} - {% if forloop.counter == 1 %}Poor{% elif forloop.counter == 2 %}Fair{% elif forloop.counter == 3 %}Good{% elif forloop.counter == 4 %}Very Good{% else %}Excellent{% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Review</label>
+                <textarea class="form-control" id="comment" name="comment" rows="5" required>{% if review %}{{ review.comment }}{% endif %}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                {% if review %}Update Review{% else %}Post Review{% endif %}
+            </button>
+            <a href="{% url 'store:product_detail' product.id %}" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

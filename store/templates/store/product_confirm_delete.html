@@ -1,0 +1,22 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Delete Product{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">Delete this product?</h3>
+                <p>You're about to delete <strong>{{ product.name }}</strong>. This action cannot be undone.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, delete</button>
+                    <a href="{% url 'store:store_detail' product.store.id %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

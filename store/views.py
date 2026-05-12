@@ -9,6 +9,36 @@ from django.shortcuts import get_object_or_404
 from .models import Store, Product
 
 from .models import Profile
+from .functions.tweet import Tweet
+
+
+def tweet_about_new_store(store):
+    """Send a tweet announcing a new store."""
+    text = (
+        f"🏪 New store on our marketplace!\n\n" f"{store.name}\n" f"{store.description}"
+    )
+    image_url = store.logo if store.logo else None
+    try:
+        Tweet().make_tweet(text=text, image_url=image_url)
+    except Exception as e:
+        # Don't let a tweet failure break the user flow
+        print(f"Failed to tweet about new store: {e}")
+
+
+def tweet_about_new_product(product):
+    """Send a tweet announcing a new product."""
+    text = (
+        f"🛍️ New product at {product.store.name}!\n\n"
+        f"{product.name}\n"
+        f"{product.description}\n\n"
+        f"R{product.price}"
+    )
+    image_url = product.image if product.image else None
+    try:
+        Tweet().make_tweet(text=text, image_url=image_url)
+    except Exception as e:
+        # Don't let a tweet failure break the user flow
+        print(f"Failed to tweet about new product: {e}")
 
 
 def is_vendor(user):
@@ -148,15 +178,20 @@ def store_create(request):
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         description = request.POST.get("description", "").strip()
+        logo = request.POST.get("logo", "").strip()
 
         if not name:
             messages.error(request, "Store name is required.")
             return render(request, "store/store_form.html")
 
         store = Store.objects.create(
-            name=name, description=description, owner=request.user
+            name=name, description=description, logo=logo, owner=request.user
         )
         messages.success(request, f"Store '{store.name}' created.")
+
+        # Announce the new store on X
+        tweet_about_new_store(store)
+
         return redirect("store:vendor_dashboard")
 
     return render(request, "store/store_form.html")
@@ -234,6 +269,7 @@ def product_create(request, store_id):
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         description = request.POST.get("description", "").strip()
+        image = request.POST.get("image", "").strip()
         price = request.POST.get("price", "").strip()
         stock = request.POST.get("stock", "").strip()
 
@@ -251,14 +287,19 @@ def product_create(request, store_id):
             messages.error(request, "Price and stock must be valid positive numbers.")
             return render(request, "store/product_form.html", {"store": store})
 
-        Product.objects.create(
+        product = Product.objects.create(
             name=name,
             description=description,
+            image=image,
             price=price_value,
             stock=stock_value,
             store=store,
         )
         messages.success(request, f"Product '{name}' added.")
+
+        # Announce the new product on X
+        tweet_about_new_product(product)
+
         return redirect("store:store_detail", store_id=store.id)
 
     return render(request, "store/product_form.html", {"store": store})

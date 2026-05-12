@@ -23,6 +23,7 @@ class Store(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    logo = models.URLField(blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="stores")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -35,6 +36,7 @@ class Product(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    image = models.URLField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name="products")

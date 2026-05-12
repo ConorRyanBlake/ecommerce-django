@@ -13,34 +13,37 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="{% url 'store:home' %}">eCommerce</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'store:product_list' %}">Browse Products</a>
+
+            <div class="navbar-nav ms-auto align-items-center gap-3">
+                <a class="nav-link px-2" href="{% url 'store:product_list' %}">Browse Products</a>
 
                 {% if user.is_authenticated %}
                 {% if user.profile.role == 'vendor' %}
-                <a class="nav-link" href="{% url 'store:vendor_dashboard' %}">Dashboard</a>
+                <a class="nav-link px-2" href="{% url 'store:vendor_dashboard' %}">Dashboard</a>
                 {% endif %}
                 {% if user.profile.role == 'buyer' %}
-                <a class="nav-link" href="{% url 'store:cart' %}">
+                <a class="nav-link px-2" href="{% url 'store:cart' %}">
                     Cart
                     {% with cart_count=request.session.cart.values|length %}
                     {% if cart_count %}
-                    <span class="badge bg-warning text-dark">{{ cart_count }}</span>
+                    <span class="badge bg-warning text-dark ms-1">{{ cart_count }}</span>
                     {% endif %}
                     {% endwith %}
                 </a>
-                <a class="nav-link" href="{% url 'store:order_history' %}">My Orders</a>
+                <a class="nav-link px-2" href="{% url 'store:order_history' %}">My Orders</a>
                 {% endif %}
-                <span class="navbar-text me-3">
-                    Hello, {{ user.username }}
+
+                <span class="navbar-text border-start border-secondary ps-3 ms-2">
+                    Hello, <strong>{{ user.username }}</strong>
                     {% if user.profile.role %}
-                    <span class="badge bg-secondary">{{ user.profile.role }}</span>
+                    <span class="badge bg-secondary ms-1">{{ user.profile.role }}</span>
                     {% endif %}
                 </span>
-                <a class="nav-link" href="{% url 'store:logout' %}">Logout</a>
+
+                <a class="btn btn-outline-light btn-sm" href="{% url 'store:logout' %}">Logout</a>
                 {% else %}
-                <a class="nav-link" href="{% url 'store:login' %}">Login</a>
-                <a class="nav-link" href="{% url 'store:register' %}">Register</a>
+                <a class="nav-link px-2" href="{% url 'store:login' %}">Login</a>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'store:register' %}">Register</a>
                 {% endif %}
             </div>
         </div>
